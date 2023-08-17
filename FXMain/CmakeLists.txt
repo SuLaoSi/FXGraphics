@@ -1,0 +1,57 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.12.0 FATAL_ERROR)
+
+IF(NOT DEFINED FXG_ROOT_DIR)
+    MESSAGE(FATAL_ERROR "The project should be built from the top-level directory.")
+ENDIF()
+
+SET(PROJECT_NAME FXMain)
+PROJECT(${PROJECT_NAME})
+
+SET(INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
+SET(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
+SET(THIRDPARTY_PATH ${FXG_ROOT_DIR}/thirdparty)
+SET(RESOURCE_PATH ${FXG_ROOT_DIR}/resources)
+
+SET(INCLUDE_LIST
+    ${INCLUDE_PATH}/main.h
+)
+
+SOURCE_GROUP(include FILES
+    ${INCLUDE_LIST}
+)
+
+SET(SRC_LIST
+    ${SRC_PATH}/main.cpp
+)
+
+SOURCE_GROUP(src FILES
+    ${SRC_LIST}
+)
+
+ADD_EXECUTABLE(${PROJECT_NAME}
+    ${INCLUDE_LIST}
+    ${SRC_LIST}
+)
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE
+    ${INCLUDE_PATH}
+    ${THIRDPARTY_PATH}/glad/include
+    ${THIRDPARTY_PATH}/glfw/include/GLFW
+    ${FXG_ROOT_DIR}/FXMath/include
+    ${FXG_ROOT_DIR}/FXBasic/include
+    ${FXG_ROOT_DIR}/FXGraphics/include
+)
+
+TARGET_LINK_DIRECTORIES(${PROJECT_NAME} PRIVATE
+    ${FXG_ROOT_DIR}/FXMath/include
+    ${FXG_ROOT_DIR}/FXBasic/include
+    ${FXG_ROOT_DIR}/FXGraphics/include
+)
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+    glad
+    glfw
+    FXMath
+    FXBasic
+    FXGraphics
+)
