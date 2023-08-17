@@ -1,0 +1,43 @@
+name: "Static Code Analysis"
+
+on:
+  push:
+    branches: [ 'develop', 'master' ]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: windows-latest
+    timeout-minutes: 60
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: cpp
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd ./build
+        cmake ..
+
+    - name: Build C++ code
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
