@@ -57,6 +57,24 @@ namespace FX {
 
     GraphicsWindow::~GraphicsWindow()
     {
+        if (!m_bufferList.empty() || !m_recycledBufferList.empty())
+        {
+            auto pOriginalWindow = s_pCurrentWindow;
+
+            if (pOriginalWindow != this)
+            {
+                glfwMakeContextCurrent(m_pWindowHandle);
+            }
+
+            releaseBuffer(m_bufferList);
+            releaseBuffer(m_recycledBufferList);
+
+            if (pOriginalWindow != this)
+            {
+                glfwMakeContextCurrent(pOriginalWindow == nullptr ? 0 : pOriginalWindow->m_pWindowHandle);
+            }
+        }
+
         s_windowMap.erase(m_pWindowHandle);
         glfwDestroyWindow(m_pWindowHandle);
 
@@ -85,13 +103,18 @@ namespace FX {
             {
                 m_isMultiSample ? glEnable(GL_MULTISAMPLE) : glDisable(GL_MULTISAMPLE);
             }
+            glViewport(0, 0, m_bufferSize.x, m_bufferSize.y);
             s_pCurrentWindow = this;
         }
     }
 
     void GraphicsWindow::frame()
     {
-        if (s_pCurrentWindow != this)
+        if (s_pCurrentWindow == this)
+        {
+            releaseBuffer(m_recycledBufferList);
+        }
+        else
         {
             BasicLog::out(BasicLog::kWarn, "Frame a window that is not currently used.");
         }
@@ -103,6 +126,89 @@ namespace FX {
     bool GraphicsWindow::shouldClose() const
     {
         return glfwWindowShouldClose(m_pWindowHandle);
+    }
+
+    void GraphicsWindow::addBuffer(GraphicsBufferObject& buffer)
+    {
+        m_bufferList.insert(&buffer);
+    }
+
+    void GraphicsWindow::removeBuffer(GraphicsBufferObject& buffer)
+    {
+        m_bufferList.erase(&buffer);
+    }
+
+    void GraphicsWindow::addRecycledBuffer(BufferInfo buffer)
+    {
+        m_recycledBufferList.insert(buffer);
+    }
+
+    void GraphicsWindow::releaseBuffer(std::set<GraphicsWindow::BufferInfo>& bufferList) const
+    {
+        for (auto&& bufferInfo : bufferList)
+        {
+            switch (bufferInfo.type)
+            {
+                case GraphicsBufferObject::Type::kProgram:
+                    glDeleteProgram(bufferInfo.handle);
+                    break;
+                case GraphicsBufferObject::Type::kShader:
+                    glDeleteShader(bufferInfo.handle);
+                    break;
+                case GraphicsBufferObject::Type::kVertexArray:
+                    glDeleteVertexArrays(1, &bufferInfo.handle);
+                    break;
+                case GraphicsBufferObject::Type::kBuffer:
+                    glDeleteBuffers(1, &bufferInfo.handle);
+                    break;
+                case GraphicsBufferObject::Type::kTexture:
+                    glDeleteTextures(1, &bufferInfo.handle);
+                    break;
+                default:
+                    BasicLog::out(BasicLog::kWarn, "Cannot release a buffer of undefined buffer type.");
+                    break;
+            }
+        }
+
+        bufferList.clear();
+    }
+
+    void GraphicsWindow::releaseBuffer(std::set<GraphicsBufferObject*>& bufferList) const
+    {
+        for (auto&& pBuffer : bufferList)
+        {
+            if (pBuffer == nullptr)
+            {
+                continue;
+            }
+
+            auto buffer = pBuffer->getOrCreate();
+            switch (pBuffer->m_type)
+            {
+                case GraphicsBufferObject::Type::kProgram:
+                    glDeleteProgram(buffer.handle);
+                    break;
+                case GraphicsBufferObject::Type::kShader:
+                    glDeleteShader(buffer.handle);
+                    break;
+                case GraphicsBufferObject::Type::kVertexArray:
+                    glDeleteVertexArrays(1, &buffer.handle);
+                    break;
+                case GraphicsBufferObject::Type::kBuffer:
+                    glDeleteBuffers(1, &buffer.handle);
+                    break;
+                case GraphicsBufferObject::Type::kTexture:
+                    glDeleteTextures(1, &buffer.handle);
+                    break;
+                default:
+                    BasicLog::out(BasicLog::kWarn, "Cannot release a buffer of undefined buffer type.");
+                    break;
+            }
+
+            pBuffer->notifyRemove();
+        }
+
+        bufferList.clear();
     }
 
     GraphicsWindow* GraphicsWindow::s_pCurrentWindow = nullptr;

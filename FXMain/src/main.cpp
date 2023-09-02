@@ -1,5 +1,6 @@
 #include <iostream>
 #include "graphics_window.h"
+#include "graphics_scene.h"
 
 int main(void)
 {
@@ -7,12 +8,12 @@ int main(void)
 
     window.use();
 
-    gladLoadGL();
+    FX::GraphicsScene scene(window);
 
     while (!window.shouldClose())
     {
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        scene.draw();
+
         window.frame();
     }
 }

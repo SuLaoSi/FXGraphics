@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <chrono>
 #include "glad.h"
 #include "glfw3.h"
@@ -10,12 +11,17 @@
 #include "basic_vector.h"
 #include "basic_macro.h"
 #include "graphics_instance.h"
+#include "graphics_buffer_object.h"
 
 namespace FX {
+
+    class GraphicsScene;
 
     class GraphicsWindow {
     public:
         friend class GraphicsEventProcessor;
+        friend class GraphicsBufferObject;
+        friend class GraphicsScene;
 
         GraphicsWindow(unsigned short width, unsigned short height, const std::string& title = "FXGraphics", bool isMultiSample = true);
         virtual ~GraphicsWindow(void);
@@ -26,6 +32,22 @@ namespace FX {
         void use(void);
         void frame(void);
         bool shouldClose(void) const;
+
+    private:
+        struct BufferInfo {
+            GraphicsBufferObject::Type type = GraphicsBufferObject::Type::kNone;
+            unsigned int handle = 0;
+            bool operator<(const BufferInfo& other) const
+            {
+                return this->type != other.type ? this->type < other.type : this->handle < other.handle;
+            }
+        };
+
+        void addBuffer(GraphicsBufferObject& buffer);
+        void removeBuffer(GraphicsBufferObject& buffer);
+        void addRecycledBuffer(BufferInfo buffer);
+        void releaseBuffer(std::set<GraphicsWindow::BufferInfo>& bufferList) const;
+        void releaseBuffer(std::set<GraphicsBufferObject*>& bufferList) const;
 
     protected:
         GLFWwindow* m_pWindowHandle = { nullptr };
@@ -38,6 +60,10 @@ namespace FX {
         static GraphicsWindow* s_pCurrentWindow;
         using WindowMap = std::map<const GLFWwindow*, GraphicsWindow*>;
         static WindowMap s_windowMap;
+
+    private:
+        std::set<GraphicsBufferObject*> m_bufferList;
+        std::set<BufferInfo> m_recycledBufferList;
     };
 
 

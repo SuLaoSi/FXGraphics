@@ -15,6 +15,8 @@ SET(RESOURCE_PATH ${FXG_ROOT_DIR}/resources)
 SET(INCLUDE_LIST
     ${INCLUDE_PATH}/graphics_instance.h
     ${INCLUDE_PATH}/graphics_window.h
+    ${INCLUDE_PATH}/graphics_buffer_object.h
+    ${INCLUDE_PATH}/graphics_scene.h
 )
 
 SOURCE_GROUP(include FILES
@@ -24,6 +26,8 @@ SOURCE_GROUP(include FILES
 SET(SRC_LIST
     ${SRC_PATH}/graphics_instance.cpp
     ${SRC_PATH}/graphics_window.cpp
+    ${SRC_PATH}/graphics_buffer_object.cpp
+    ${SRC_PATH}/graphics_scene.cpp
 )
 
 SOURCE_GROUP(src FILES
