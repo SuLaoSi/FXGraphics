@@ -2,6 +2,7 @@
 
 #include "basic_log.h"
 #include "graphics_window.h"
+#include "graphics_shader.h"
 
 namespace FX {
 
@@ -10,7 +11,18 @@ namespace FX {
     {
     }
 
-    GraphicsScene::~GraphicsScene() {}
+    GraphicsScene::~GraphicsScene()
+    {
+        for (auto pShader : m_shaderList)
+        {
+            if (pShader == nullptr)
+            {
+                continue;
+            }
+
+            pShader->removeScene(*this);
+        }
+    }
 
     void GraphicsScene::draw()
     {
@@ -25,6 +37,20 @@ namespace FX {
         // TO DO
 
         afterDraw();
+    }
+
+    void GraphicsScene::addShader(GraphicsShader& shader)
+    {
+        m_shaderList.insert(&shader);
+        shader.addScene(*this);
+        setDirty();
+    }
+
+    void GraphicsScene::removeShader(GraphicsShader& shader)
+    {
+        m_shaderList.erase(&shader);
+        shader.removeScene(*this);
+        setDirty();
     }
 
     unsigned int GraphicsScene::create() const
@@ -44,7 +70,19 @@ namespace FX {
         auto program = getOrCreate();
         if (program.isDirty == true)
         {
-            // TO DO
+            for (auto pShader : m_shaderList)
+            {
+                auto shader = pShader->getOrCreate();
+                if (shader.isDirty == true)
+                {
+                    pShader->update(shader.handle);
+                    pShader->setReady();
+                }
+
+
+            }
+
+
 
             setReady();
         }

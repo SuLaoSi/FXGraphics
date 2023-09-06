@@ -1,11 +1,14 @@
 #ifndef _GRAPHICS_SCENE_H_
 #define _GRAPHICS_SCENE_H_
 
+#include <set>
+
 #include "graphics_buffer_object.h"
 
 namespace FX {
 
     class GraphicsWindow;
+    class GraphicsShader;
 
     class GraphicsScene : public GraphicsBufferObject {
     public:
@@ -13,6 +16,9 @@ namespace FX {
         ~GraphicsScene(void);
 
         void draw(void);
+
+        void addShader(GraphicsShader& shader);
+        void removeShader(GraphicsShader& shader);
 
     protected:
         unsigned int create(void) const override;
@@ -22,6 +28,7 @@ namespace FX {
 
     protected:
         const GraphicsWindow* m_pWindow = { nullptr };
+        std::set<GraphicsShader*> m_shaderList;
     };
 
 } // namespace FX

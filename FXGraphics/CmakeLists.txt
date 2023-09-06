@@ -10,13 +10,14 @@ PROJECT(${PROJECT_NAME})
 SET(INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
 SET(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 SET(THIRDPARTY_PATH ${FXG_ROOT_DIR}/thirdparty)
-SET(RESOURCE_PATH ${FXG_ROOT_DIR}/resources)
+SET(SHADER_PATH ${FXG_ROOT_DIR}/resources/shader)
 
 SET(INCLUDE_LIST
     ${INCLUDE_PATH}/graphics_instance.h
     ${INCLUDE_PATH}/graphics_window.h
     ${INCLUDE_PATH}/graphics_buffer_object.h
     ${INCLUDE_PATH}/graphics_scene.h
+    ${INCLUDE_PATH}/graphics_shader.h
 )
 
 SOURCE_GROUP(include FILES
@@ -28,23 +29,26 @@ SET(SRC_LIST
     ${SRC_PATH}/graphics_window.cpp
     ${SRC_PATH}/graphics_buffer_object.cpp
     ${SRC_PATH}/graphics_scene.cpp
+    ${SRC_PATH}/graphics_shader.cpp
 )
 
 SOURCE_GROUP(src FILES
     ${SRC_LIST}
 )
 
-SET(RESOURCE_LIST
+SET(SHADER_LIST
+    ${SHADER_PATH}/default.vert
+    ${SHADER_PATH}/default.frag
 )
 
-SOURCE_GROUP(resource FILES
-    ${RESOURCE_LIST}
+SOURCE_GROUP(shader FILES
+    ${SHADER_LIST}
 )
 
 ADD_LIBRARY(${PROJECT_NAME}
     ${INCLUDE_LIST}
     ${SRC_LIST}
-    ${RESOURCE_LIST}
+    ${SHADER_LIST}
 )
 
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE

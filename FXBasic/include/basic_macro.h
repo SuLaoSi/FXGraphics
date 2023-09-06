@@ -15,6 +15,8 @@ namespace FX {
     DELETE_COPY_CONSTRUCT(Class);                   \
     DELETE_MOVE_CONSTRUCT(Class)
 
+#define BUILTIN_SHADER_DIR    FXG_ROOT_DIR "/resources/shader/"
+
 } // namespace FX
 
 #endif // _BASIC_MACRO_H_
