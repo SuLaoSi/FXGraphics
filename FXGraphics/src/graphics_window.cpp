@@ -1,6 +1,7 @@
 #include "graphics_window.h"
 
 #include "basic_log.h"
+#include "graphics_gpu_item.h"
 
 namespace FX {
 
@@ -26,11 +27,6 @@ namespace FX {
     GraphicsWindow::GraphicsWindow(unsigned short width, unsigned short height, const std::string& title, bool isMultiSample)
         : m_windowSize({ width, height }), m_bufferSize({ width, height }), m_title(title), m_isMultiSample(isMultiSample),
           m_creationTime(std::chrono::steady_clock::now())
-    {
-        init();
-    }
-
-    void GraphicsWindow::init()
     {
         // init glfw
         m_isMultiSample ? glfwWindowHint(GLFW_SAMPLES, 4) : glfwWindowHint(GLFW_SAMPLES, 0);
@@ -62,11 +58,17 @@ namespace FX {
 
     GraphicsWindow::~GraphicsWindow()
     {
-        uninit();
-    }
+        for (auto pItem : m_itemsToDelete)
+        {
+            delete pItem;
+        }
+        m_itemsToDelete.clear();
 
-    void GraphicsWindow::uninit()
-    {
+        for (auto pItem : m_itemList)
+        {
+            pItem->clearItem(this);
+        }
+
         s_windowMap.erase(m_pWindowHandle);
         glfwDestroyWindow(m_pWindowHandle);
 
@@ -76,7 +78,7 @@ namespace FX {
             if (pCurrent != nullptr)
             {
                 auto itr = s_windowMap.find(pCurrent);
-                s_pCurrentWindow = itr != s_windowMap.end() ? (*itr).second : nullptr;
+                s_pCurrentWindow = itr != s_windowMap.end() ? itr->second : nullptr;
             }
             else
             {
@@ -94,6 +96,12 @@ namespace FX {
             m_isMultiSample ? glEnable(GL_MULTISAMPLE) : glDisable(GL_MULTISAMPLE);
             s_pCurrentWindow = this;
         }
+
+        for (auto pItem : m_itemsToDelete)
+        {
+            delete pItem;
+        }
+        m_itemsToDelete.clear();
     }
 
     void GraphicsWindow::frame()
@@ -110,6 +118,26 @@ namespace FX {
     bool GraphicsWindow::shouldClose() const
     {
         return glfwWindowShouldClose(m_pWindowHandle);
+    }
+
+    GraphicsWindow* GraphicsWindow::currentWindow()
+    {
+        return s_pCurrentWindow;
+    }
+
+    void GraphicsWindow::addToDelete(ItemInfo* pItem)
+    {
+        m_itemsToDelete.push_back(pItem);
+    }
+
+    void GraphicsWindow::addItem(GraphicsGPUItem* pItem)
+    {
+        m_itemList.insert(pItem);
+    }
+
+    void GraphicsWindow::removeItem(GraphicsGPUItem* pItem)
+    {
+        m_itemList.erase(pItem);
     }
 
     GraphicsWindow* GraphicsWindow::s_pCurrentWindow = nullptr;
