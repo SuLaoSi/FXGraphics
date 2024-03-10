@@ -1,4 +1,3 @@
-#include <iostream>
 #include "graphics_window.h"
 
 int main(void)

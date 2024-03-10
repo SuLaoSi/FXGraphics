@@ -4,6 +4,8 @@
 #include <string>
 #include <map>
 #include <chrono>
+#include <vector>
+#include <set>
 #include "glad.h"
 #include "glfw3.h"
 
@@ -13,9 +15,13 @@
 
 namespace FX {
 
+    class GraphicsGPUItem;
+    class ItemInfo;
+
     class GraphicsWindow {
     public:
         friend class GraphicsEventProcessor;
+        friend class GraphicsGPUItem;
 
         GraphicsWindow(unsigned short width, unsigned short height, const std::string& title = "FXGraphics", bool isMultiSample = true);
         virtual ~GraphicsWindow(void);
@@ -27,17 +33,25 @@ namespace FX {
         void frame(void);
         bool shouldClose(void) const;
 
-    protected:
-        virtual void init(void);
-        virtual void uninit(void);
+        static GraphicsWindow* currentWindow(void);
 
     protected:
-        GLFWwindow* m_pWindowHandle = { nullptr };
+        GraphicsWindow(void) = default;
+
+        void addToDelete(ItemInfo* pItem);
+        void addItem(GraphicsGPUItem* pItem);
+        void removeItem(GraphicsGPUItem* pItem);
+
+    protected:
+        GLFWwindow* m_pWindowHandle = nullptr;
         vec2us m_windowSize = { 1280, 720 };
         vec2us m_bufferSize = { 1280, 720 };
         std::string m_title;
         const std::chrono::steady_clock::time_point m_creationTime;
         bool m_isMultiSample = true;
+
+        std::vector<ItemInfo*> m_itemsToDelete;
+        std::set<GraphicsGPUItem*> m_itemList;
 
         static GraphicsWindow* s_pCurrentWindow;
         using WindowMap = std::map<const GLFWwindow*, GraphicsWindow*>;
