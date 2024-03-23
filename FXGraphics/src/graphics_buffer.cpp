@@ -21,6 +21,13 @@ namespace FX {
         pItem->unbind();
     }
 
+    ItemInfo* GraphicsBuffer::create() const
+    {
+        auto pItem = new BufferInfo(m_type, m_hint);
+        glGenBuffers(1, &pItem->m_handle);
+        return pItem;
+    }
+
     BufferInfo::BufferInfo(GPUItemType type, StorageHint hint) : ItemInfo(type), m_hint(hint)
     {
     }
@@ -58,6 +65,42 @@ namespace FX {
     void BufferInfo::unMapBuffer() const
     {
         glUnmapBuffer((GLenum)m_type);
+    }
+
+    GraphicsVBO::GraphicsVBO(StorageHint hint) : GraphicsBuffer(GPUItemType::kVBO, hint)
+    {
+    }
+
+    void GraphicsVBO::ensure()
+    {
+        // TODO
+    }
+
+    GraphicsEBO::GraphicsEBO(StorageHint hint) : GraphicsBuffer(GPUItemType::kEBO, hint)
+    {
+    }
+
+    void GraphicsEBO::ensure()
+    {
+        // TODO
+    }
+
+    GraphicsSSBO::GraphicsSSBO(StorageHint hint) : GraphicsBuffer(GPUItemType::kSSBO, hint)
+    {
+    }
+
+    void GraphicsSSBO::ensure()
+    {
+        // TODO
+    }
+
+    GraphicsDIBO::GraphicsDIBO(StorageHint hint) : GraphicsBuffer(GPUItemType::kDIBO, hint)
+    {
+    }
+
+    void GraphicsDIBO::ensure()
+    {
+        // TODO
     }
 
 } // namespace FX

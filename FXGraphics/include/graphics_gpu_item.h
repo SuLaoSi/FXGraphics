@@ -10,7 +10,9 @@ namespace FX {
 
     enum class GPUItemType : unsigned int {
         kVBO = 0x8892,
-        kEBO = 0x8893
+        kEBO = 0x8893,
+        kSSBO = 0x90D2,
+        kDIBO = 0x8F3F
     };
 
     class GraphicsWindow;

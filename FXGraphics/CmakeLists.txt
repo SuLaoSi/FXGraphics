@@ -19,6 +19,7 @@ SET(INCLUDE_LIST
     ${INCLUDE_PATH}/graphics_buffer.h
     ${INCLUDE_PATH}/graphics_scene.h
     ${INCLUDE_PATH}/graphics_entity.h
+    ${INCLUDE_PATH}/graphics_entity_group.h
     ${INCLUDE_PATH}/graphics_diverter.h
 )
 
@@ -33,6 +34,7 @@ SET(SRC_LIST
     ${SRC_PATH}/graphics_buffer.cpp
     ${SRC_PATH}/graphics_scene.cpp
     ${SRC_PATH}/graphics_entity.cpp
+    ${SRC_PATH}/graphics_entity_group.cpp
     ${SRC_PATH}/graphics_diverter.cpp
 )
 

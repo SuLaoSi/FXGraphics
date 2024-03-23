@@ -68,6 +68,7 @@ namespace FX {
         {
             pItem->clearItem(this);
         }
+        m_itemList.clear();
 
         s_windowMap.erase(m_pWindowHandle);
         glfwDestroyWindow(m_pWindowHandle);

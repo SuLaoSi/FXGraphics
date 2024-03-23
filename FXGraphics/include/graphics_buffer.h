@@ -18,6 +18,10 @@ namespace FX {
         void bind(void);
         void unbind(void);
 
+        ItemInfo* create(void) const override;
+
+        virtual void ensure(void) = 0;
+
     protected:
         const StorageHint m_hint = StorageHint::kStatic;
     };
@@ -39,6 +43,38 @@ namespace FX {
 
     protected:
         const StorageHint m_hint = StorageHint::kStatic;
+    };
+
+
+    class GraphicsVBO : public  GraphicsBuffer {
+    public:
+        explicit GraphicsVBO(StorageHint hint = StorageHint::kStatic);
+
+        void ensure(void) override;
+    };
+
+
+    class GraphicsEBO : public  GraphicsBuffer {
+    public:
+        explicit GraphicsEBO(StorageHint hint = StorageHint::kStatic);
+
+        void ensure(void) override;
+    };
+
+
+    class GraphicsSSBO : public  GraphicsBuffer {
+    public:
+        explicit GraphicsSSBO(StorageHint hint = StorageHint::kStatic);
+
+        void ensure(void) override;
+    };
+
+
+    class GraphicsDIBO : public  GraphicsBuffer {
+    public:
+        explicit GraphicsDIBO(StorageHint hint = StorageHint::kStatic);
+
+        void ensure(void) override;
     };
 
 } // namespace FX

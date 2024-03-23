@@ -58,6 +58,7 @@ namespace FX {
         auto itr = m_itemList.find(pWindow);
         if (itr != m_itemList.end())
         {
+            delete itr->second;
             m_itemList.erase(itr);
         }
         else

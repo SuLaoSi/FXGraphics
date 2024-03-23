@@ -4,6 +4,7 @@
 #include <set>
 
 #include "graphics_entity.h"
+#include "graphics_entity_group.h"
 
 namespace FX {
 
@@ -20,41 +21,41 @@ namespace FX {
         template<class T>
         bool addEntity(GraphicsEntity<T>* pEntity)
         {
-            return add(pEntity);
+            static_assert(false, "Please implement add function of specific type!");
+            return false;
         }
 
         template<class T>
         bool removeEntity(GraphicsEntity<T>* pEntity)
         {
-            return remove(pEntity);
+            static_assert(false, "Please implement remove function of specific type!");
+            return false;
         }
 
-    protected:
-
-#define FUNCTION_DEFINITION(TYPE, TARGET)              \
-        bool add(GraphicsEntity<TYPE>* pEntity)        \
-        {                                              \
-            return (TARGET.insert(pEntity)).second;    \
-        }                                              \
-        bool remove(GraphicsEntity<TYPE>* pEntity)     \
-        {                                              \
-            return TARGET.erase(pEntity) > 0;          \
+#define FUNCTION_DEFINITION(TYPE, TARGET)                \
+        bool addEntity(GraphicsEntity<TYPE>* pEntity)    \
+        {                                                \
+            return TARGET->addEntity(pEntity);           \
+        }                                                \
+        bool removeEntity(GraphicsEntity<TYPE>* pEntity) \
+        {                                                \
+            return TARGET->addEntity(pEntity);           \
         }
 
-        FUNCTION_DEFINITION(Vertex, m_entityVList)
-        FUNCTION_DEFINITION(VertexIndex, m_entityVIList)
-        FUNCTION_DEFINITION(VertexNormal, m_entityVNList)
-        FUNCTION_DEFINITION(VertexNormalIndex, m_entityVNIList)
+        FUNCTION_DEFINITION(Vertex, m_pEntityVGroup)
+        FUNCTION_DEFINITION(VertexIndex, m_pEntityVIGroup)
+        FUNCTION_DEFINITION(VertexNormal, m_pEntityVNGroup)
+        FUNCTION_DEFINITION(VertexNormalIndex, m_pEntityVNIGroup)
 
 #undef FUNCTION_DEFINITION
 
     protected:
         GraphicsScene* m_pScene = nullptr;
 
-        std::set<GraphicsEntity<Vertex>*> m_entityVList;
-        std::set<GraphicsEntity<VertexIndex>*> m_entityVIList;
-        std::set<GraphicsEntity<VertexNormal>*> m_entityVNList;
-        std::set<GraphicsEntity<VertexNormalIndex>*> m_entityVNIList;
+        GraphicsEntityGroup<Vertex>* m_pEntityVGroup = nullptr;
+        GraphicsEntityGroup<VertexIndex>* m_pEntityVIGroup = nullptr;
+        GraphicsEntityGroup<VertexNormal>* m_pEntityVNGroup = nullptr;
+        GraphicsEntityGroup<VertexNormalIndex>* m_pEntityVNIGroup = nullptr;
     };
 
 } // namespace FX
